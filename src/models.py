@@ -7,39 +7,25 @@ from eralchemy2 import render_er
 
 Base = declarative_base()
 
-class Users(Base):
+class User(Base):
     __tablename__ = 'users'
-
     id = Column(Integer, primary_key=True)
     username = Column(String(50), nullable=False, unique=True)
     email = Column(String(100), nullable=False, unique=True)
     password = Column(String(100), nullable=False)
 
-    favorites = relationship('Favourite', back_populates='users')
+    favorites = relationship('Favorite', back_populates='user')
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "username": self.username,
-            "email": self.email
-        }
-
-class Characters(Base):
+class Character(Base):
     __tablename__ = 'characters'
     id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
     description = Column(String(250))
     birth_year = Column(String(50))
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "description": self.description,
-            "birth_year": self.birth_year
-        }
+    favorites = relationship('Favorite', back_populates='character')
 
-class Planets(Base):
+class Planet(Base):
     __tablename__ = 'planets'
     id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
@@ -47,29 +33,18 @@ class Planets(Base):
     climate = Column(String(50))
     population = Column(Integer)
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "description": self.description,
-            "climate": self.climate,
-            "population": self.population
-        }
+    favorites = relationship('Favorite', back_populates='planet')
 
-class Favorites(Base):
+class Favorite(Base):
     __tablename__ = 'favorites'
     id = Column(Integer, primary_key=True)
-    user_id= Column(Integer, ForeignKey('user.id'), nullable=False)
-    character_id = Column(Integer, ForeignKey('character.id'), nullable=True)
-    planet_id = Column(Integer, ForeignKey('planet.id'), nullable=True)
+    user_id= Column(Integer, ForeignKey('users.id'), nullable=False)
+    character_id = Column(Integer, ForeignKey('characters.id'), nullable=True)
+    planet_id = Column(Integer, ForeignKey('planets.id'), nullable=True)
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "character_id": self.character_id,
-            "planet_id": self.planet_id
-        }
+    user = relationship('User', back_populates='favorites')
+    character = relationship('Character', back_populates='favorites')
+    planet = relationship('Planet', back_populates='favorites')
 
 
 ## Draw from SQLAlchemy base
